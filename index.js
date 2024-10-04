@@ -1,37 +1,50 @@
 const express = require('express');
+const fs = require('fs');
 const path = require('path');
-const multer = require('multer');
 const app = express();
 
-// Set storage engine for Multer (file upload handler)
-const storage = multer.diskStorage({
-    destination: './uploads/',
-    filename: function (req, file, cb) {
-        cb(null, file.originalname);
-    }
-});
-
-// Initialize Upload
-const upload = multer({ storage: storage }).single('scriptFile');
+// Middleware to handle form data
+app.use(express.urlencoded({ extended: true }));
 
 // Serve static files (HTML page)
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Handle file upload through POST request
+// Handle script upload via POST request
 app.post('/upload', (req, res) => {
-    upload(req, res, (err) => {
+    const scriptName = req.body.scriptName.trim();
+    const scriptContent = req.body.scriptContent;
+
+    // Sanitize the script name to avoid illegal file names
+    const sanitizedScriptName = scriptName.replace(/[^a-zA-Z0-9-_]/g, '') + '.lua';
+
+    // Save the script content to a .lua file in the uploads folder
+    const scriptPath = path.join(__dirname, 'uploads', sanitizedScriptName);
+    fs.writeFile(scriptPath, scriptContent, (err) => {
         if (err) {
-            res.send('Error uploading the file.');
-        } else {
-            res.send('File uploaded successfully! <a href="/">Go back</a>');
+            console.error('Error saving script:', err);
+            return res.status(500).send('Error uploading the script.');
         }
+        res.send('Script uploaded successfully! <a href="/">Go back</a>');
     });
 });
 
-// Serve raw Lua scripts from 'uploads' folder
+// Serve raw Lua scripts from the 'uploads' folder
 app.get('/raw/:filename', (req, res) => {
     const filePath = path.join(__dirname, 'uploads', req.params.filename);
     res.sendFile(filePath);
+});
+
+// Endpoint to get the list of available scripts
+app.get('/scripts', (req, res) => {
+    fs.readdir(path.join(__dirname, 'uploads'), (err, files) => {
+        if (err) {
+            console.error('Error reading directory:', err);
+            return res.status(500).send('Error loading scripts.');
+        }
+        // Only return .lua files
+        const luaFiles = files.filter(file => file.endsWith('.lua'));
+        res.json(luaFiles);
+    });
 });
 
 // Start the server
