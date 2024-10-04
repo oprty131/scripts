@@ -3,6 +3,12 @@ const fs = require('fs');
 const path = require('path');
 const app = express();
 
+// Ensure the 'uploads' directory exists
+const uploadDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir);
+}
+
 // Middleware to handle form data
 app.use(express.urlencoded({ extended: true }));
 
@@ -18,12 +24,13 @@ app.post('/upload', (req, res) => {
     const sanitizedScriptName = scriptName.replace(/[^a-zA-Z0-9-_]/g, '') + '.lua';
 
     // Save the script content to a .lua file in the uploads folder
-    const scriptPath = path.join(__dirname, 'uploads', sanitizedScriptName);
+    const scriptPath = path.join(uploadDir, sanitizedScriptName);
     fs.writeFile(scriptPath, scriptContent, (err) => {
         if (err) {
             console.error('Error saving script:', err);
             return res.status(500).send('Error uploading the script.');
         }
+        console.log(`Script saved as ${sanitizedScriptName}`);
         res.send('Script uploaded successfully! <a href="/">Go back</a>');
     });
 });
@@ -31,12 +38,18 @@ app.post('/upload', (req, res) => {
 // Serve raw Lua scripts from the 'uploads' folder
 app.get('/raw/:filename', (req, res) => {
     const filePath = path.join(__dirname, 'uploads', req.params.filename);
-    res.sendFile(filePath);
+    fs.access(filePath, fs.constants.F_OK, (err) => {
+        if (err) {
+            console.error('File not found:', filePath);
+            return res.status(404).send('Script not found');
+        }
+        res.sendFile(filePath);
+    });
 });
 
 // Endpoint to get the list of available scripts
 app.get('/scripts', (req, res) => {
-    fs.readdir(path.join(__dirname, 'uploads'), (err, files) => {
+    fs.readdir(uploadDir, (err, files) => {
         if (err) {
             console.error('Error reading directory:', err);
             return res.status(500).send('Error loading scripts.');
