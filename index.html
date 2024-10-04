@@ -1,45 +1,67 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Script Upload</title>
-</head>
-<body>
-    <h1>Upload a Lua Script</h1>
-    
-    <!-- Corrected form submission -->
-    <form action="/upload" method="POST">
-        <label for="scriptName">Script Name:</label>
-        <input type="text" id="scriptName" name="scriptName" placeholder="Enter script name" required>
-        <br><br>
-        <label for="scriptContent">Script Content:</label>
-        <textarea id="scriptContent" name="scriptContent" rows="10" cols="50" placeholder="Enter your script here" required></textarea>
-        <br><br>
-        <button type="submit">Upload Script</button>
-    </form>
+const express = require('express');
+const fs = require('fs');
+const path = require('path');
+const app = express();
 
-    <h2>Available Scripts</h2>
-    <ul id="scriptList">
-        <!-- Scripts will be loaded here by the script below -->
-    </ul>
+// Ensure the 'uploads' directory exists
+const uploadDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir);
+}
 
-    <script>
-        // Fetch and display the available scripts
-        fetch('/scripts')
-            .then(response => response.json())
-            .then(data => {
-                const scriptList = document.getElementById('scriptList');
-                scriptList.innerHTML = ''; // Clear the list
-                data.forEach(script => {
-                    const listItem = document.createElement('li');
-                    listItem.innerHTML = `<a href="/raw/${script}" target="_blank">${script}</a>`;
-                    scriptList.appendChild(listItem);
-                });
-            })
-            .catch(error => {
-                console.error('Error fetching script list:', error);
-            });
-    </script>
-</body>
-</html>
+// Middleware to handle form data
+app.use(express.urlencoded({ extended: true }));
+
+// Serve static files (HTML page)
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Handle script upload via POST request
+app.post('/upload', (req, res) => {
+    const scriptName = req.body.scriptName.trim();
+    const scriptContent = req.body.scriptContent;
+
+    // Sanitize the script name to avoid illegal file names
+    const sanitizedScriptName = scriptName.replace(/[^a-zA-Z0-9-_]/g, '') + '.lua';
+
+    // Save the script content to a .lua file in the uploads folder
+    const scriptPath = path.join(uploadDir, sanitizedScriptName);
+    fs.writeFile(scriptPath, scriptContent, (err) => {
+        if (err) {
+            console.error('Error saving script:', err);
+            return res.status(500).send('Error uploading the script.');
+        }
+        console.log(`Script saved as ${sanitizedScriptName}`);
+        res.send('Script uploaded successfully! <a href="/">Go back</a>');
+    });
+});
+
+// Serve raw Lua scripts from the 'uploads' folder
+app.get('/raw/:filename', (req, res) => {
+    const filePath = path.join(__dirname, 'uploads', req.params.filename);
+    fs.access(filePath, fs.constants.F_OK, (err) => {
+        if (err) {
+            console.error('File not found:', filePath);
+            return res.status(404).send('Script not found');
+        }
+        res.sendFile(filePath);
+    });
+});
+
+// Endpoint to get the list of available scripts
+app.get('/scripts', (req, res) => {
+    fs.readdir(uploadDir, (err, files) => {
+        if (err) {
+            console.error('Error reading directory:', err);
+            return res.status(500).send('Error loading scripts.');
+        }
+        // Only return .lua files
+        const luaFiles = files.filter(file => file.endsWith('.lua'));
+        res.json(luaFiles);
+    });
+});
+
+// Start the server
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+    console.log(`Server running on port ${port}`);
+});
