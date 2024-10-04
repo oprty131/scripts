@@ -4,6 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Script Repository</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        pre {
+            background-color: #f0f0f0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            overflow: auto;
+            white-space: pre-wrap; /* Allows long lines to wrap */
+        }
+        a {
+            display: block;
+            margin: 5px 0;
+        }
+    </style>
 </head>
 <body>
     <h1>Available Scripts</h1>
@@ -17,17 +34,16 @@
     <div id="rawContent" style="margin-top: 20px;">
         <h2>Raw Script:</h2>
         <pre id="rawScript"></pre>
+        <button id="copyButton" style="display:none;">Copy to Clipboard</button>
     </div>
 
     <!-- Script storage -->
     <script id="script1" type="text/plain">
-        -- Script 1 content
-        print('Hello, this is Script 1')
+        loadstring(game:HttpGet('https://example.com/script1.lua'))()
     </script>
 
     <script id="script2" type="text/plain">
-        -- Script 2 content
-        print('Hello, this is Script 2')
+        loadstring(game:HttpGet('https://example.com/script2.lua'))()
     </script>
 
     <script>
@@ -36,6 +52,15 @@
             var scriptContent = document.getElementById(scriptId).textContent;
             var rawScriptElement = document.getElementById('rawScript');
             rawScriptElement.textContent = scriptContent;
+
+            // Show the copy button
+            var copyButton = document.getElementById('copyButton');
+            copyButton.style.display = 'inline-block';
+            copyButton.onclick = function() {
+                navigator.clipboard.writeText(scriptContent).then(() => {
+                    alert('Script copied to clipboard!');
+                });
+            };
         }
     </script>
 </body>
