@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Script Upload</title>
+</head>
+<body>
+    <h1>Upload a Lua Script</h1>
+    <form action="/upload" method="POST" enctype="multipart/form-data">
+        <input type="file" name="scriptFile" accept=".lua">
+        <button type="submit">Upload Script</button>
+    </form>
+
+    <h2>Available Scripts</h2>
+    <ul>
+        <li><a href="/raw/myscript.lua">myscript.lua</a></li>
+        <!-- Add more links here for other scripts -->
+    </ul>
+</body>
+</html>
