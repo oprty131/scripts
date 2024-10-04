@@ -4,23 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Raw Script Repository</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        pre {
-            background-color: #f0f0f0;
-            padding: 10px;
-            border: 1px solid #ccc;
-            overflow: auto;
-            white-space: pre-wrap; /* Allows long lines to wrap */
-        }
-        a {
-            display: block;
-            margin: 5px 0;
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <h1>Script Upload</h1>
@@ -33,39 +17,6 @@
         <!-- List of scripts will appear here -->
     </ul>
 
-    <script>
-        const scripts = [];
-
-        // Function to upload script
-        function uploadScript() {
-            const name = document.getElementById('scriptName').value;
-            const content = document.getElementById('scriptContent').value;
-
-            if (name && content) {
-                const scriptUrl = `data:text/plain;charset=utf-8,${encodeURIComponent(content)}`;
-                scripts.push({ name, url: scriptUrl });
-
-                // Reset input fields
-                document.getElementById('scriptName').value = '';
-                document.getElementById('scriptContent').value = '';
-
-                // Update the script list
-                updateScriptList();
-            } else {
-                alert('Please enter both the script name and content.');
-            }
-        }
-
-        // Function to update the script list display
-        function updateScriptList() {
-            const scriptList = document.getElementById('scriptList');
-            scriptList.innerHTML = '';
-            scripts.forEach(script => {
-                const listItem = document.createElement('li');
-                listItem.innerHTML = `<a href="${script.url}" target="_blank">${script.name} (Raw)</a>`;
-                scriptList.appendChild(listItem);
-            });
-        }
-    </script>
+    <script src="index.js"></script>
 </body>
 </html>
