@@ -3,19 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Raw Script Repository</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Script Uploader</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        input, textarea {
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 10px;
+        }
+        button {
+            padding: 10px 20px;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+    </style>
 </head>
 <body>
-    <h1>Script Upload</h1>
-    <input type="text" id="scriptName" placeholder="Script Name" />
-    <textarea id="scriptContent" placeholder="Enter your script here..." rows="10" cols="30"></textarea>
+    <h1>Script Uploader</h1>
+    <input type="text" id="scriptName" placeholder="Script Name" required>
+    <textarea id="scriptContent" rows="10" placeholder="Script Content" required></textarea>
     <button onclick="uploadScript()">Upload</button>
-
+    
     <h2>Available Scripts</h2>
-    <ul id="scriptList">
-        <!-- List of scripts will appear here -->
-    </ul>
+    <ul id="scriptList"></ul>
 
     <script src="index.js"></script>
 </body>
