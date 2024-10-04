@@ -1,67 +1,42 @@
-const express = require('express');
-const fs = require('fs');
-const path = require('path');
-const app = express();
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Script Repository</title>
+</head>
+<body>
+    <h1>Available Scripts</h1>
+    <ul id="scriptList">
+        <!-- List of scripts with links to view raw content -->
+        <li><a href="#" onclick="showRawScript('script1')">Script 1</a></li>
+        <li><a href="#" onclick="showRawScript('script2')">Script 2</a></li>
+    </ul>
 
-// Ensure the 'uploads' directory exists
-const uploadDir = path.join(__dirname, 'uploads');
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir);
-}
+    <!-- Container to display the raw script content -->
+    <div id="rawContent" style="margin-top: 20px;">
+        <h2>Raw Script:</h2>
+        <pre id="rawScript"></pre>
+    </div>
 
-// Middleware to handle form data
-app.use(express.urlencoded({ extended: true }));
+    <!-- Script storage -->
+    <script id="script1" type="text/plain">
+        -- Script 1 content
+        print('Hello, this is Script 1')
+    </script>
 
-// Serve static files (HTML page)
-app.use(express.static(path.join(__dirname, 'public')));
+    <script id="script2" type="text/plain">
+        -- Script 2 content
+        print('Hello, this is Script 2')
+    </script>
 
-// Handle script upload via POST request
-app.post('/upload', (req, res) => {
-    const scriptName = req.body.scriptName.trim();
-    const scriptContent = req.body.scriptContent;
-
-    // Sanitize the script name to avoid illegal file names
-    const sanitizedScriptName = scriptName.replace(/[^a-zA-Z0-9-_]/g, '') + '.lua';
-
-    // Save the script content to a .lua file in the uploads folder
-    const scriptPath = path.join(uploadDir, sanitizedScriptName);
-    fs.writeFile(scriptPath, scriptContent, (err) => {
-        if (err) {
-            console.error('Error saving script:', err);
-            return res.status(500).send('Error uploading the script.');
+    <script>
+        // Function to show the raw content of the selected script
+        function showRawScript(scriptId) {
+            var scriptContent = document.getElementById(scriptId).textContent;
+            var rawScriptElement = document.getElementById('rawScript');
+            rawScriptElement.textContent = scriptContent;
         }
-        console.log(`Script saved as ${sanitizedScriptName}`);
-        res.send('Script uploaded successfully! <a href="/">Go back</a>');
-    });
-});
-
-// Serve raw Lua scripts from the 'uploads' folder
-app.get('/raw/:filename', (req, res) => {
-    const filePath = path.join(__dirname, 'uploads', req.params.filename);
-    fs.access(filePath, fs.constants.F_OK, (err) => {
-        if (err) {
-            console.error('File not found:', filePath);
-            return res.status(404).send('Script not found');
-        }
-        res.sendFile(filePath);
-    });
-});
-
-// Endpoint to get the list of available scripts
-app.get('/scripts', (req, res) => {
-    fs.readdir(uploadDir, (err, files) => {
-        if (err) {
-            console.error('Error reading directory:', err);
-            return res.status(500).send('Error loading scripts.');
-        }
-        // Only return .lua files
-        const luaFiles = files.filter(file => file.endsWith('.lua'));
-        res.json(luaFiles);
-    });
-});
-
-// Start the server
-const port = process.env.PORT || 3000;
-app.listen(port, () => {
-    console.log(`Server running on port ${port}`);
-});
+    </script>
+</body>
+</html>
