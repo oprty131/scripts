@@ -25,10 +25,10 @@ function updateScriptList() {
     for (let i = 0; i < localStorage.length; i++) {
         const name = localStorage.key(i);
         const content = localStorage.getItem(name);
-        // Create a raw link using a data URL
+        // Encode the content for raw link
         const rawLink = `data:text/plain;charset=utf-8,${encodeURIComponent(content)}`;
         const listItem = document.createElement('li');
-        listItem.innerHTML = `<a href="${rawLink}" target="_blank">${name} (Raw)</a>`;
+        listItem.innerHTML = `<a href="${rawLink}" target="_blank">${name}</a>`;
         scriptList.appendChild(listItem);
     }
 }
