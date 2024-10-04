@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Script Repository</title>
+    <title>Raw Script Repository</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -23,44 +23,48 @@
     </style>
 </head>
 <body>
-    <h1>Available Scripts</h1>
+    <h1>Script Upload</h1>
+    <input type="text" id="scriptName" placeholder="Script Name" />
+    <textarea id="scriptContent" placeholder="Enter your script here..." rows="10" cols="30"></textarea>
+    <button onclick="uploadScript()">Upload</button>
+
+    <h2>Available Scripts</h2>
     <ul id="scriptList">
-        <!-- List of scripts with links to view raw content -->
-        <li><a href="#" onclick="showRawScript('script1')">Script 1</a></li>
-        <li><a href="#" onclick="showRawScript('script2')">Script 2</a></li>
+        <!-- List of scripts will appear here -->
     </ul>
 
-    <!-- Container to display the raw script content -->
-    <div id="rawContent" style="margin-top: 20px;">
-        <h2>Raw Script:</h2>
-        <pre id="rawScript"></pre>
-        <button id="copyButton" style="display:none;">Copy to Clipboard</button>
-    </div>
-
-    <!-- Script storage -->
-    <script id="script1" type="text/plain">
-        loadstring(game:HttpGet('https://example.com/script1.lua'))()
-    </script>
-
-    <script id="script2" type="text/plain">
-        loadstring(game:HttpGet('https://example.com/script2.lua'))()
-    </script>
-
     <script>
-        // Function to show the raw content of the selected script
-        function showRawScript(scriptId) {
-            var scriptContent = document.getElementById(scriptId).textContent;
-            var rawScriptElement = document.getElementById('rawScript');
-            rawScriptElement.textContent = scriptContent;
+        const scripts = [];
 
-            // Show the copy button
-            var copyButton = document.getElementById('copyButton');
-            copyButton.style.display = 'inline-block';
-            copyButton.onclick = function() {
-                navigator.clipboard.writeText(scriptContent).then(() => {
-                    alert('Script copied to clipboard!');
-                });
-            };
+        // Function to upload script
+        function uploadScript() {
+            const name = document.getElementById('scriptName').value;
+            const content = document.getElementById('scriptContent').value;
+
+            if (name && content) {
+                const scriptUrl = `data:text/plain;charset=utf-8,${encodeURIComponent(content)}`;
+                scripts.push({ name, url: scriptUrl });
+
+                // Reset input fields
+                document.getElementById('scriptName').value = '';
+                document.getElementById('scriptContent').value = '';
+
+                // Update the script list
+                updateScriptList();
+            } else {
+                alert('Please enter both the script name and content.');
+            }
+        }
+
+        // Function to update the script list display
+        function updateScriptList() {
+            const scriptList = document.getElementById('scriptList');
+            scriptList.innerHTML = '';
+            scripts.forEach(script => {
+                const listItem = document.createElement('li');
+                listItem.innerHTML = `<a href="${script.url}" target="_blank">${script.name} (Raw)</a>`;
+                scriptList.appendChild(listItem);
+            });
         }
     </script>
 </body>
