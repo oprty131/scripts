@@ -1,15 +1,11 @@
-const scripts = [];
-
 // Function to upload script
 function uploadScript() {
     const name = document.getElementById('scriptName').value;
     const content = document.getElementById('scriptContent').value;
 
     if (name && content) {
-        // Create a Blob from the script content
-        const blob = new Blob([content], { type: 'text/plain' });
-        const scriptUrl = URL.createObjectURL(blob); // Create a URL for the Blob
-        scripts.push({ name, url: scriptUrl }); // Add to the scripts array
+        // Store the script content in localStorage
+        localStorage.setItem(name, content);
 
         // Reset input fields
         document.getElementById('scriptName').value = '';
@@ -26,10 +22,18 @@ function uploadScript() {
 function updateScriptList() {
     const scriptList = document.getElementById('scriptList');
     scriptList.innerHTML = ''; // Clear the current list
-    scripts.forEach(script => {
+    for (let i = 0; i < localStorage.length; i++) {
+        const name = localStorage.key(i);
+        const content = localStorage.getItem(name);
+        // Create a raw link using a data URL
+        const rawLink = `data:text/plain;charset=utf-8,${encodeURIComponent(content)}`;
         const listItem = document.createElement('li');
-        // Create a link to the Blob URL for each script
-        listItem.innerHTML = `<a href="${script.url}" target="_blank">${script.name} (Raw)</a>`;
+        listItem.innerHTML = `<a href="${rawLink}" target="_blank">${name} (Raw)</a>`;
         scriptList.appendChild(listItem);
-    });
+    }
 }
+
+// Load scripts from localStorage on page load
+window.onload = function () {
+    updateScriptList(); // Initialize the script list
+};
