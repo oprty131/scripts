@@ -7,15 +7,33 @@
 </head>
 <body>
     <h1>Upload a Lua Script</h1>
-    <form action="/upload" method="POST" enctype="multipart/form-data">
-        <input type="file" name="scriptFile" accept=".lua">
+    <form action="/upload" method="POST">
+        <label for="scriptName">Script Name:</label>
+        <input type="text" id="scriptName" name="scriptName" placeholder="Enter script name" required>
+        <br><br>
+        <label for="scriptContent">Script Content:</label>
+        <textarea id="scriptContent" name="scriptContent" rows="10" cols="50" placeholder="Enter your script here" required></textarea>
+        <br><br>
         <button type="submit">Upload Script</button>
     </form>
 
     <h2>Available Scripts</h2>
-    <ul>
-        <li><a href="/raw/myscript.lua">myscript.lua</a></li>
-        <!-- Add more links here for other scripts -->
+    <ul id="scriptList">
+        <!-- This section will list available scripts -->
     </ul>
+
+    <script>
+        // Fetch and display the available scripts
+        fetch('/scripts')
+            .then(response => response.json())
+            .then(data => {
+                const scriptList = document.getElementById('scriptList');
+                data.forEach(script => {
+                    const listItem = document.createElement('li');
+                    listItem.innerHTML = `<a href="/raw/${script}">${script}</a>`;
+                    scriptList.appendChild(listItem);
+                });
+            });
+    </script>
 </body>
 </html>
