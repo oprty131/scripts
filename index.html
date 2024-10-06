@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>All Movies</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>My Songs</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -18,28 +17,16 @@
             padding: 20px 0;
             text-align: center;
         }
-        nav {
-            margin: 20px 0;
-        }
-        nav a {
-            color: #fff;
-            text-decoration: none;
-            margin: 0 15px;
-        }
         .container {
             width: 80%;
             margin: 0 auto;
         }
-        .movie {
+        .song {
             background: #fff;
             margin: 15px 0;
             padding: 15px;
             border-radius: 5px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-        .movie img {
-            max-width: 100%;
-            border-radius: 5px;
         }
         .video-container {
             position: relative;
@@ -70,71 +57,38 @@
 <body>
 
 <header>
-    <h1>All Movies</h1>
-    <nav>
-        <a href="#featured">Featured</a>
-        <a href="#genres">Genres</a>
-        <a href="#contact">Contact</a>
-    </nav>
+    <h1>My Songs</h1>
 </header>
 
 <div class="container">
-    <section id="featured">
-        <h2>Featured Movies</h2>
-        <div class="movie">
-            <h3>Movie Title 1</h3>
-            <img src="movie1.jpg" alt="this is a good song">
+    <section id="songs">
+        <h2>Featured Songs</h2>
+        <div class="song">
+            <h3>best song</h3>
             <div class="video-container">
-                <iframe src="https://youtu.be/MfEWUFqdPQI?si=9DIfTnnX5Nqrri1e" frameborder="0" allowfullscreen></iframe>
+                <iframe src="https://www.youtube.com/embed/MfEWUFqdPQI?autoplay=1&mute=1" frameborder="0" allow="autoplay" allowfullscreen></iframe>
             </div>
-            <p>Description of Movie 1.</p>
+            <p>Description of Song 1.</p>
         </div>
-        <div class="movie">
-            <h3>Movie Title 2</h3>
-            <img src="movie2.jpg" alt="godzila">
+        <div class="song">
+            <h3>godzila</h3>
             <div class="video-container">
-                <iframe src="https://youtu.be/MIa8--922Sg?si=nPE9aOqRk1dYo91_" frameborder="0" allowfullscreen></iframe>
+                <iframe src="https://www.youtube.com/embed/MIa8--922Sg?autoplay=1&mute=1" frameborder="0" allow="autoplay" allowfullscreen></iframe>
             </div>
-            <p>Description of Movie 2.</p>
+            <p>Description of Song 2.</p>
         </div>
-        <div class="movie">
-            <h3>Movie Title 3</h3>
-            <img src="movie3.jpg" alt="soon">
+        <div class="song">
+            <h3>Song Title 3</h3>
             <div class="video-container">
-                <iframe src="https://www.youtube.com/embed/example3" frameborder="0" allowfullscreen></iframe>
+                <iframe src="https://www.youtube.com/embed/YOUR_YOUTUBE_VIDEO_ID_3?autoplay=1&mute=1" frameborder="0" allow="autoplay" allowfullscreen></iframe>
             </div>
-            <p>Description of Movie 3.</p>
+            <p>Description of Song 3.</p>
         </div>
-    </section>
-
-    <section id="genres">
-        <h2>Genres</h2>
-        <ul>
-            <li>Action</li>
-            <li>Drama</li>
-            <li>Comedy</li>
-            <li>Thriller</li>
-            <li>Romance</li>
-            <li>Sci-Fi</li>
-        </ul>
-    </section>
-
-    <section id="contact">
-        <h2>Contact Us</h2>
-        <form>
-            <label for="name">Name:</label><br>
-            <input type="text" id="name" name="name" required><br>
-            <label for="email">Email:</label><br>
-            <input type="email" id="email" name="email" required><br>
-            <label for="message">Message:</label><br>
-            <textarea id="message" name="message" required></textarea><br>
-            <input type="submit" value="Submit">
-        </form>
     </section>
 </div>
 
 <footer>
-    <p>&copy; 2024 All good songs. All rights reserved.</p>
+    <p>&copy; 2024 My Songs. All rights reserved.</p>
 </footer>
 
 </body>
