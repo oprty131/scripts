@@ -43,8 +43,8 @@
 <body>
 
 <h1>TikTok Video Embedder</h1>
-<p>Enter your TikTok short URL to view the video:</p>
-<input type="text" id="tiktokUrl" placeholder="Enter TikTok Short URL (e.g., https://vt.tiktok.com/ZS2wu8w8W/)">
+<p>Enter your TikTok URL to view the video:</p>
+<input type="text" id="tiktokUrl" placeholder="Enter TikTok URL (e.g., https://vt.tiktok.com/ZS2wu8w8W/)">
 <button id="embedVideo">Embed Video</button>
 
 <div class="video-container" id="videoContainer">
@@ -62,17 +62,18 @@
             return;
         }
 
-        // Extract the video ID from the TikTok short URL
-        const regex = /\/(\w+)\//; // Matches the last part of the URL (video ID)
+        // Extract the video ID and username from the TikTok URL
+        const regex = /tiktok\.com\/@([^\/]+)\/video\/(\d+)/;
         const match = tiktokUrl.match(regex);
-        
-        if (!match || match.length < 2) {
-            alert('Invalid TikTok short URL.');
+
+        if (!match || match.length < 3) {
+            alert('Invalid TikTok URL. Please enter a valid TikTok video URL.');
             return;
         }
 
-        const videoId = match[1];
-        const embedUrl = `https://www.tiktok.com/@peakkiashi/video/${videoId}`;
+        const username = match[1];
+        const videoId = match[2];
+        const embedUrl = `https://www.tiktok.com/@${username}/video/${videoId}`;
 
         // Set the embed URL to the iframe
         document.getElementById('tiktokEmbed').src = embedUrl;
