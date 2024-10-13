@@ -25,6 +25,7 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            margin-left: 5px;
         }
         button:hover {
             background-color: #0056b3;
@@ -44,12 +45,16 @@
 
 <h1>TikTok Video Embedder</h1>
 <p>Enter your TikTok URL to view the video:</p>
-<input type="text" id="tiktokUrl" placeholder="Enter TikTok URL (e.g., https://vt.tiktok.com/ZS2wu8w8W/)">
+<input type="text" id="tiktokUrl" placeholder="Enter TikTok URL (e.g., https://www.tiktok.com/@username/video/videoID)">
 <button id="embedVideo">Embed Video</button>
 
 <div class="video-container" id="videoContainer">
     <h2>Embedded Video:</h2>
     <iframe id="tiktokEmbed" src="" allowfullscreen></iframe>
+    <div>
+        <input type="text" id="embedLink" readonly>
+        <button id="copyLink">Copy Link</button>
+    </div>
 </div>
 
 <script>
@@ -63,21 +68,63 @@
         }
 
         // Extract the video ID and username from the TikTok URL
-        const regex = /tiktok\.com\/@([^\/]+)\/video\/(\d+)/;
+        const regex = /(?:https?:\/\/)?(?:www\.)?(?:tiktok\.com\/@([^\/]+)\/video\/(\d+)|vt\.tiktok\.com\/(\w+))/;
         const match = tiktokUrl.match(regex);
 
-        if (!match || match.length < 3) {
+        let username, videoId;
+
+        if (match) {
+            // Check if the match is from the full TikTok URL
+            if (match[1] && match[2]) {
+                username = match[1];
+                videoId = match[2];
+            } 
+            // Check if the match is from the short URL
+            else if (match[3]) {
+                const shortVideoId = match[3];
+                // Fetch the full URL using TikTok's embed API (only if needed)
+                fetch(`https://vt.tiktok.com/${shortVideoId}`)
+                    .then(response => {
+                        if (!response.ok) throw new Error('Network response was not ok');
+                        return response.url; // This will get the full URL after redirection
+                    })
+                    .then(fullUrl => {
+                        const fullMatch = fullUrl.match(/tiktok\.com\/@([^\/]+)\/video\/(\d+)/);
+                        if (fullMatch) {
+                            username = fullMatch[1];
+                            videoId = fullMatch[2];
+                            setEmbedUrl(username, videoId);
+                        } else {
+                            alert('Could not extract video information. Please check the URL.');
+                        }
+                    })
+                    .catch(error => {
+                        alert('Error fetching the video: ' + error.message);
+                    });
+                return; // Exit the function to wait for the fetch
+            }
+        } else {
             alert('Invalid TikTok URL. Please enter a valid TikTok video URL.');
             return;
         }
 
-        const username = match[1];
-        const videoId = match[2];
-        const embedUrl = `https://www.tiktok.com/@${username}/video/${videoId}`;
+        // If we matched the full URL directly, we can set the embed URL immediately
+        setEmbedUrl(username, videoId);
+    });
 
-        // Set the embed URL to the iframe
+    function setEmbedUrl(username, videoId) {
+        const embedUrl = `https://www.tiktok.com/@${username}/video/${videoId}`;
         document.getElementById('tiktokEmbed').src = embedUrl;
+        document.getElementById('embedLink').value = embedUrl; // Set the embed link for copying
         document.getElementById('videoContainer').style.display = 'block'; // Show the video container
+    }
+
+    document.getElementById('copyLink').addEventListener('click', function() {
+        const embedLink = document.getElementById('embedLink');
+        embedLink.select();
+        embedLink.setSelectionRange(0, 99999); // For mobile devices
+        document.execCommand("copy");
+        alert("Copied the link: " + embedLink.value);
     });
 </script>
 
