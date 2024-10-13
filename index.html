@@ -3,93 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Songs</title>
+    <title>TikTok URL Masking Tool</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
+            margin: 20px;
+            padding: 20px;
             background-color: #f4f4f4;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
-        header {
-            background: #333;
-            color: #fff;
-            padding: 20px 0;
-            text-align: center;
-        }
-        .container {
+        input[type="text"] {
             width: 80%;
-            margin: 0 auto;
+            padding: 10px;
+            margin: 10px 0;
         }
-        .song {
-            background: #fff;
-            margin: 15px 0;
-            padding: 15px;
+        button {
+            padding: 10px 15px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
             border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
         }
-        .video-container {
-            position: relative;
-            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
-            height: 0;
-            overflow: hidden;
-            max-width: 100%;
-            background: #000;
+        button:hover {
+            background-color: #0056b3;
         }
-        .video-container iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
-        footer {
-            text-align: center;
-            padding: 20px 0;
-            background: #333;
-            color: #fff;
-            position: relative;
-            bottom: 0;
-            width: 100%;
+        .result {
+            margin-top: 20px;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
 
-<header>
-    <h1>My Songs</h1>
-</header>
+<h1>TikTok URL Masking Tool</h1>
+<p>Enter your TikTok URL to generate a masked link:</p>
+<input type="text" id="tiktokUrl" placeholder="Enter TikTok URL">
+<button id="generateLink">Generate Masked Link</button>
 
-<div class="container">
-    <section id="songs">
-        <h2>Featured Songs</h2>
-        <div class="song">
-            <h3>Best Song</h3>
-            <div class="video-container">
-                <iframe src="https://www.youtube.com/embed/MfEWUFqdPQI?autoplay=1" frameborder="0" allow="autoplay" allowfullscreen></iframe>
-            </div>
-            <p>Description of Song 1.</p>
-        </div>
-        <div class="song">
-            <h3>Godzilla</h3>
-            <div class="video-container">
-                <iframe src="https://www.youtube.com/embed/MIa8--922Sg?autoplay=1" frameborder="0" allow="autoplay" allowfullscreen></iframe>
-            </div>
-            <p>Description of Song 2.</p>
-        </div>
-        <div class="song">
-            <h3>Soon</h3>
-            <div class="video-container">
-                <iframe src="https://www.youtube.com/embed/YOUR_YOUTUBE_VIDEO_ID_3?autoplay=1" frameborder="0" allow="autoplay" allowfullscreen></iframe>
-            </div>
-            <p>Description of Song 3.</p>
-        </div>
-    </section>
-</div>
+<div class="result" id="result"></div>
 
-<footer>
-    <p>&copy; 2024 My Songs. All rights reserved.</p>
-</footer>
+<script>
+    document.getElementById('generateLink').addEventListener('click', function() {
+        const tiktokUrl = document.getElementById('tiktokUrl').value.trim();
+        
+        // Basic validation for TikTok URL
+        if (!tiktokUrl) {
+            alert('Please enter a TikTok URL.');
+            return;
+        }
+
+        // Generate masked URL (simulated format)
+        // Example: https://usiso.com/https://v45.tiktokcdn-us.com/... (input your actual TikTok link here)
+        const maskedUrl = `https://usiso.com/${encodeURIComponent(tiktokUrl)}`;
+
+        // Display the masked URL
+        document.getElementById('result').innerHTML = `Masked Link: <a href="${maskedUrl}" target="_blank">${maskedUrl}</a>`;
+    });
+</script>
 
 </body>
 </html>
