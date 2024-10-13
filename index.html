@@ -33,6 +33,10 @@
             margin-top: 20px;
             font-weight: bold;
         }
+        #note {
+            color: red;
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -43,6 +47,7 @@
 <button id="generateLink">Generate Masked Link</button>
 
 <div class="result" id="result"></div>
+<p id="note">* This masked link redirects to your website.</p>
 
 <script>
     document.getElementById('generateLink').addEventListener('click', function() {
@@ -54,12 +59,12 @@
             return;
         }
 
-        // Generate masked URL (simulated format)
-        // Example: https://usiso.com/https://v45.tiktokcdn-us.com/... (input your actual TikTok link here)
-        const maskedUrl = `https://usiso.com/${encodeURIComponent(tiktokUrl)}`;
+        // Generate masked URL using your website as the base
+        const maskedUrl = `https://scripts-zhfk.onrender.com?url=${encodeURIComponent(tiktokUrl)}`;
 
         // Display the masked URL
         document.getElementById('result').innerHTML = `Masked Link: <a href="${maskedUrl}" target="_blank">${maskedUrl}</a>`;
+        document.getElementById('note').style.display = 'block'; // Show the note
     });
 </script>
 
