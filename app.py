@@ -1,83 +1,144 @@
-from flask import Flask, render_template, request, jsonify
-import threading
+import ssl
 import time
-import requests
-import random
+import queue
+import threading
+from random import randint, choice
+from urllib3.exceptions import InsecureRequestWarning
 from urllib.parse import urlparse
+from http import cookiejar
+import requests
+from flask import Flask, render_template, request, redirect, url_for
+
+requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
+ssl._create_default_https_context = ssl._create_unverified_context
+r = requests.Session()
+countQueue = queue.Queue()
+sentRequests = 0
+completed = False
+
+class BlockCookies(cookiejar.CookiePolicy):
+    return_ok = set_ok = domain_return_ok = path_return_ok = lambda self, *args, **kwargs: False
+    netscape = True
+    rfc2965 = hide_cookie2 = False
+
+r.cookies.set_policy(BlockCookies())
+
+# Simulated Data for UserAgent and Device Types
+UserAgent = [
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+    "Mozilla/5.0 (Linux; Android 10; Nexus 5X) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+    "Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Mobile/15E148 Safari/604.1"
+]
+DeviceTypes = ["iPhone", "Android", "iPad"]
+Platforms = ["android", "ios", "web"]
+Channel = ["tiktok_web", "musically_go"]
+ApiDomain = ["api.tiktok.com"]
+
+def sendView(itemID):
+    proxy = {f'{proxyType}': f'{proxyType}://{choice(proxyList)}'}
+    platform = choice(Platforms)
+    osVersion = randint(1, 12)
+    DeviceType = choice(DeviceTypes)
+    headers = {
+        "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
+        "user-agent": choice(UserAgent)
+    }
+    appName = choice(["tiktok_web", "musically_go"])
+    Device_ID = randint(1000000000000000000, 9999999999999999999)
+    apiDomain = choice(ApiDomain)
+    channelLol = choice(Channel)
+    URI = f"https://{apiDomain}/aweme/v1/aweme/stats/?channel={channelLol}&device_type={DeviceType}&device_id={Device_ID}&os_version={osVersion}&version_code=220400&app_name={appName}&device_platform={platform}&aid=1988"
+    data = f"item_id={itemID}&play_delta=1"
+
+    try:
+        req = r.post(URI, headers=headers, data=data, proxies=proxy, timeout=5, verify=False)
+        return True
+    except Exception as e:
+        print(f"Error in sendView: {e}")
+        return False
+
+def sendShare(itemID):
+    proxy = {f'{proxyType}': f'{proxyType}://{choice(proxyList)}'}
+    platform = choice(Platforms)
+    osVersion = randint(1, 12)
+    DeviceType = choice(DeviceTypes)
+    headers = {
+        "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
+        "user-agent": choice(UserAgent)
+    }
+    appName = choice(["tiktok_web", "musically_go"])
+    Device_ID = randint(1000000000000000000, 9999999999999999999)
+    apiDomain = choice(ApiDomain)
+    channelLol = choice(Channel)
+    URI = f"https://{apiDomain}/aweme/v1/aweme/stats/?channel={channelLol}&device_type={DeviceType}&device_id={Device_ID}&os_version={osVersion}&version_code=220400&app_name={appName}&device_platform={platform}&aid=1988"
+    data = f"item_id={itemID}&share_delta=1"
+
+    try:
+        req = r.post(URI, headers=headers, data=data, proxies=proxy, timeout=5, verify=False)
+        return True
+    except Exception as e:
+        print(f"Error in sendShare: {e}")
+        return False
+
+def clearURL(link):
+    parsedURL = urlparse(link)
+    host = parsedURL.hostname.lower()
+    if "vm.tiktok.com" == host or "vt.tiktok.com" == host:
+        UrlParsed = urlparse(r.head(link, verify=False, allow_redirects=True, timeout=5).url)
+        return UrlParsed.path.split("/")[3]
+    else:
+        UrlParsed = urlparse(link)
+        return UrlParsed.path.split("/")[3]
+
+def processThread(sendProcess, itemID):
+    while not completed:
+        if sendProcess(itemID):
+            countQueue.put(1)
+
+def countThread(amount):
+    global sentRequests, completed
+    while True:
+        countQueue.get()
+        sentRequests += 1
+        if amount > 0 and sentRequests >= amount:
+            completed = True
 
 app = Flask(__name__)
 
-# Global variables for controlling sending process
-sending = False
-sent_requests = 0
-
-# Function to extract item ID from TikTok URL
-def extract_item_id(url):
-    parsed_url = urlparse(url)
-    path_segments = parsed_url.path.split('/')
-    return path_segments[-1] if path_segments else None
-
-def send_view_or_share(item_id, send_type, amount, proxies):
-    global sending, sent_requests
-    sent_requests = 0
-    sending = True
-
-    for _ in range(amount):
-        if not sending:
-            break
-        # Randomly select a proxy
-        proxy = random.choice(proxies)
-        time.sleep(0.5)  # Simulate network delay
-
-        # Simulate sending a view or share (replace with your actual logic)
-        try:
-            if send_type == 0:
-                # Sending view
-                print(f"Sending view for item {item_id} using proxy {proxy}")
-                # Example request (mocked)
-            else:
-                # Sending share
-                print(f"Sending share for item {item_id} using proxy {proxy}")
-                # Example request (mocked)
-            sent_requests += 1
-        except Exception as e:
-            print(f"Error sending: {e}")
-
-    sending = False
-
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def index():
+    if request.method == 'POST':
+        video_url = request.form['video_url']
+        amount = int(request.form['amount'])
+        send_type = int(request.form['send_type'])  # 0 for views, 1 for shares
+
+        itemID = clearURL(video_url)
+
+        # Start processing threads
+        global proxyList
+        proxyList = []  # You need to implement your proxy loading logic here
+        proxyChoose = True
+        while proxyChoose:
+            proxyType = request.form.get('proxy_type')
+            if proxyType in ["http", "socks4", "socks5"]:
+                proxyChoose = False
+
+        if send_type == 0:
+            sendProcess = sendView
+        elif send_type == 1:
+            sendProcess = sendShare
+
+        threading.Thread(target=countThread, args=(amount,)).start()
+        for n in range(10):  # Number of threads
+            threading.Thread(target=processThread, args=(sendProcess, itemID)).start()
+
+        return redirect(url_for('progress'))
+
     return render_template('index.html')
 
-@app.route('/start', methods=['POST'])
-def start_sending():
-    global sent_requests
-    data = request.json
-    url = data['url']
-    send_type = data['sendType']
-    amount = data['amount']
-    proxies = data['proxies']
-
-    item_id = extract_item_id(url)
-    if not item_id:
-        return jsonify({"status": "Invalid URL"}), 400
-
-    # Start the sending process in a separate thread
-    thread = threading.Thread(target=send_view_or_share, args=(item_id, send_type, amount, proxies))
-    thread.start()
-
-    return jsonify({"status": "sending started"})
-
-@app.route('/stop', methods=['POST'])
-def stop_sending():
-    global sending
-    sending = False
-    return jsonify({"status": "sending stopped", "sent": sent_requests})
-
-@app.route('/status', methods=['GET'])
-def status():
-    global sent_requests
-    return jsonify({"sending": sending, "sent": sent_requests})
+@app.route('/progress')
+def progress():
+    return f"Sent Requests: {sentRequests}, Completed: {completed}"
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+    app.run(debug=True)
