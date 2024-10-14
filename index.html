@@ -3,82 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TikTok Video Link Generator</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            padding: 20px;
-            background-color: #f4f4f4;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        input[type="text"] {
-            width: 80%;
-            padding: 10px;
-            margin: 10px 0;
-        }
-        button {
-            padding: 10px 15px;
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-left: 5px;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-        .link-container {
-            margin-top: 20px;
-            display: none;
-        }
-    </style>
+    <title>TikTok Boosting</title>
 </head>
 <body>
-
-<h1>TikTok Video Link Generator</h1>
-<p>Enter your TikTok URL to generate a shareable link:</p>
-<input type="text" id="tiktokUrl" placeholder="Enter TikTok URL (e.g., https://www.tiktok.com/@username/video/videoID)">
-<button id="generateLink">Generate Link</button>
-
-<div class="link-container" id="linkContainer">
-    <h2>Video Link:</h2>
-    <a id="videoLink" href="#" target="_blank">Watch Video</a>
-</div>
-
-<script>
-    document.getElementById('generateLink').addEventListener('click', function() {
-        const tiktokUrl = document.getElementById('tiktokUrl').value.trim();
-
-        // Basic validation for TikTok URL
-        if (!tiktokUrl) {
-            alert('Please enter a TikTok URL.');
-            return;
-        }
-
-        // Extract the video ID and username from the TikTok URL
-        const regex = /(?:https?:\/\/)?(?:www\.)?(?:tiktok\.com\/@([^\/]+)\/video\/(\d+))/;
-        const match = tiktokUrl.match(regex);
-
-        let username, videoId;
-
-        if (match) {
-            username = match[1];
-            videoId = match[2];
-        } else {
-            alert('Invalid TikTok URL. Please enter a valid TikTok video URL.');
-            return;
-        }
-
-        // Generate a new watch link
-        const videoLink = `https://www.tiktok.com/@${username}/video/${videoId}`;
-        document.getElementById('videoLink').href = videoLink;
-        document.getElementById('videoLink').innerText = videoLink;
-        document.getElementById('linkContainer').style.display = 'block'; // Show the link container
-    });
-</script>
-
+    <h1>TikTok View/Share Booster</h1>
+    <form method="POST">
+        <label for="video_url">Video URL:</label>
+        <input type="text" id="video_url" name="video_url" required><br><br>
+        
+        <label for="amount">Amount (0 for infinite):</label>
+        <input type="number" id="amount" name="amount" required><br><br>
+        
+        <label for="send_type">Send Type:</label>
+        <select id="send_type" name="send_type" required>
+            <option value="0">Views</option>
+            <option value="1">Shares</option>
+        </select><br><br>
+        
+        <label for="proxy_type">Proxy Type:</label>
+        <select id="proxy_type" name="proxy_type" required>
+            <option value="http">HTTP</option>
+            <option value="socks4">SOCKS4</option>
+            <option value="socks5">SOCKS5</option>
+        </select><br><br>
+        
+        <input type="submit" value="Start">
+    </form>
 </body>
 </html>
