@@ -3,71 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>View/Share Sender</title>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        #status { margin-top: 20px; }
-        .hidden { display: none; }
-    </style>
+    <title>TikTok Boosting</title>
 </head>
 <body>
-    <h1>View/Share Sender</h1>
-    <input type="text" id="url" placeholder="TikTok URL" required>
-    <select id="sendType">
-        <option value="0">Views</option>
-        <option value="1">Shares</option>
-    </select>
-    <input type="number" id="amount" placeholder="Amount" min="1" required>
-    <textarea id="proxies" placeholder="Enter proxies (one per line)" rows="5" required></textarea>
-    <button id="startBtn">Start</button>
-    <button id="stopBtn" class="hidden">Stop</button>
-
-    <div id="status"></div>
-
-    <script>
-        $(document).ready(function() {
-            let intervalId;
-
-            $("#startBtn").click(function() {
-                const url = $("#url").val();
-                const sendType = $("#sendType").val();
-                const amount = $("#amount").val();
-                const proxies = $("#proxies").val().trim().split('\n');
-
-                $("#status").text("Sending...");
-                $("#startBtn").prop("disabled", true);
-                $("#stopBtn").removeClass("hidden");
-
-                $.post("/start", JSON.stringify({ url, sendType, amount, proxies }), function() {
-                    intervalId = setInterval(checkStatus, 1000);
-                }, {
-                    contentType: "application/json"
-                });
-            });
-
-            $("#stopBtn").click(function() {
-                $.post("/stop", function(response) {
-                    clearInterval(intervalId);
-                    $("#status").text(`Sending stopped. Total sent: ${response.sent}`);
-                    $("#startBtn").prop("disabled", false);
-                    $("#stopBtn").addClass("hidden");
-                });
-            });
-
-            function checkStatus() {
-                $.get("/status", function(response) {
-                    if (response.sending) {
-                        $("#status").text(`Sending... Total sent: ${response.sent}`);
-                    } else {
-                        clearInterval(intervalId);
-                        $("#status").text(`Sending stopped. Total sent: ${response.sent}`);
-                        $("#startBtn").prop("disabled", false);
-                        $("#stopBtn").addClass("hidden");
-                    }
-                });
-            }
-        });
-    </script>
+    <h1>TikTok View/Share Booster</h1>
+    <form method="POST">
+        <label for="video_url">Video URL:</label>
+        <input type="text" id="video_url" name="video_url" required><br><br>
+        
+        <label for="amount">Amount (0 for infinite):</label>
+        <input type="number" id="amount" name="amount" required><br><br>
+        
+        <label for="send_type">Send Type:</label>
+        <select id="send_type" name="send_type" required>
+            <option value="0">Views</option>
+            <option value="1">Shares</option>
+        </select><br><br>
+        
+        <label for="proxy_type">Proxy Type:</label>
+        <select id="proxy_type" name="proxy_type" required>
+            <option value="http">HTTP</option>
+            <option value="socks4">SOCKS4</option>
+            <option value="socks5">SOCKS5</option>
+        </select><br><br>
+        
+        <input type="submit" value="Start">
+    </form>
 </body>
 </html>
