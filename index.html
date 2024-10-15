@@ -3,67 +3,139 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TikTok Link Replacer</title>
+    <title>Tiktok Links Hider</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            margin: 50px;
-            padding: 20px;
-            background-color: #f4f4f4;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #121212;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
         }
-        input[type="text"], input[type="url"] {
-            padding: 10px;
+
+        .container {
+            text-align: center;
+            padding: 40px;
+            background-color: #1f1f1f;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s forwards ease-out;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: #ff5c5c;
+        }
+
+        input[type="url"] {
             width: 80%;
-            margin-bottom: 10px;
+            padding: 15px;
+            border: none;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            font-size: 1rem;
+            background-color: #333;
+            color: #fff;
         }
+
         button {
             padding: 10px 20px;
-            background-color: #007bff;
-            color: white;
             border: none;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-        .output {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: #e0e0e0;
             border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin: 10px;
+            transition: background-color 0.3s ease;
+        }
+
+        button.replace {
+            background-color: #ff5c5c;
+            color: white;
+        }
+
+        button.replace:hover {
+            background-color: #ff4040;
+        }
+
+        button.copy {
+            background-color: #1f8b4c;
+            color: white;
+        }
+
+        button.copy:hover {
+            background-color: #146c39;
+        }
+
+        .output {
+            display: none;
+            margin-top: 20px;
+            background-color: #333;
+            padding: 15px;
+            border-radius: 5px;
+            font-size: 1rem;
+            word-wrap: break-word;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
     </style>
 </head>
 <body>
 
-    <h1>TikTok Link Replacer</h1>
-    <p>Enter your TikTok link below to replace it with the custom URL.</p>
-    
-    <input type="url" id="tiktokLink" placeholder="Enter TikTok link" required>
-    <button onclick="replaceLink()">Replace Link</button>
-    
-    <div id="result" class="output" style="display: none;">
-        <p>Your replaced link:</p>
-        <p id="replacedLink"></p>
+    <div class="container">
+        <h1>Tiktok Links Hider</h1>
+        <input type="url" id="tiktokLink" placeholder="Enter TikTok link" required>
+        <br>
+        <button class="replace" onclick="replaceLink()">Replace Link</button>
+        <button class="copy" onclick="copyLink()" style="display: none;" id="copyButton">Copy Link</button>
+        <div id="result" class="output">
+            <p>Your replaced link:</p>
+            <p id="replacedLink"></p>
+        </div>
     </div>
 
     <script>
         function replaceLink() {
             const inputLink = document.getElementById("tiktokLink").value;
-            // Regex to match TikTok links like https://vt.tiktok.com/XXXXXX/
             const pattern = /^https:\/\/vt\.tiktok\.com\/([a-zA-Z0-9]+)\/?$/;
-
             const match = inputLink.match(pattern);
 
             if (match) {
-                const code = match[1];  // Extracts the code from the TikTok link
+                const code = match[1];  // Extract the TikTok code
                 const newLink = `https://www.vxtiktok.com/t/${code}/`;
                 document.getElementById("replacedLink").innerHTML = `<a href="${newLink}" target="_blank">${newLink}</a>`;
                 document.getElementById("result").style.display = 'block';
+                document.getElementById("copyButton").style.display = 'inline-block';
             } else {
                 document.getElementById("replacedLink").textContent = "Invalid TikTok link. Please enter a valid TikTok link.";
                 document.getElementById("result").style.display = 'block';
+                document.getElementById("copyButton").style.display = 'none';
             }
+        }
+
+        function copyLink() {
+            const linkText = document.getElementById("replacedLink").innerText;
+            navigator.clipboard.writeText(linkText).then(() => {
+                alert("Link copied to clipboard!");
+            }).catch(err => {
+                alert("Failed to copy: ", err);
+            });
         }
     </script>
 
