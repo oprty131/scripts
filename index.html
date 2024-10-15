@@ -3,20 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TikTok URL Expander</title>
+    <title>TikTok Link Replacer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 50px;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        input[type="text"], input[type="url"] {
+            padding: 10px;
+            width: 80%;
+            margin-bottom: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .output {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+        }
+    </style>
 </head>
 <body>
-    <h1>TikTok URL Expander</h1>
-    <form action="/expand" method="POST">
-        <label for="tiktok-url">Enter TikTok URL:</label>
-        <input type="text" id="tiktok-url" name="url" placeholder="https://vt.tiktok.com/..." required>
-        <button type="submit">Expand URL</button>
-    </form>
 
-    {% if final_url %}
-        <h2>Expanded URL:</h2>
-        <p>{{ final_url }}</p>
-        <p>Copied to clipboard!</p>
-    {% endif %}
+    <h1>TikTok Link Replacer</h1>
+    <p>Enter your TikTok link below to replace it with the custom URL.</p>
+    
+    <input type="url" id="tiktokLink" placeholder="Enter TikTok link" required>
+    <button onclick="replaceLink()">Replace Link</button>
+    
+    <div id="result" class="output" style="display: none;">
+        <p>Your replaced link:</p>
+        <p id="replacedLink"></p>
+    </div>
+
+    <script>
+        function replaceLink() {
+            const inputLink = document.getElementById("tiktokLink").value;
+            // Regex to match TikTok links like https://vt.tiktok.com/XXXXXX/
+            const pattern = /^https:\/\/vt\.tiktok\.com\/([a-zA-Z0-9]+)\/?$/;
+
+            const match = inputLink.match(pattern);
+
+            if (match) {
+                const code = match[1];  // Extracts the code from the TikTok link
+                const newLink = `https://www.vxtiktok.com/t/${code}/`;
+                document.getElementById("replacedLink").innerHTML = `<a href="${newLink}" target="_blank">${newLink}</a>`;
+                document.getElementById("result").style.display = 'block';
+            } else {
+                document.getElementById("replacedLink").textContent = "Invalid TikTok link. Please enter a valid TikTok link.";
+                document.getElementById("result").style.display = 'block';
+            }
+        }
+    </script>
+
 </body>
 </html>
