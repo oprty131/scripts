@@ -6,9 +6,9 @@
     <title>TikTok URL Expander</title>
 </head>
 <body>
-    <h1>Enter TikTok Short URL</h1>
+    <h1>TikTok URL Expander</h1>
     <form action="/expand" method="POST">
-        <label for="tiktok-url">TikTok URL:</label>
+        <label for="tiktok-url">Enter TikTok URL:</label>
         <input type="text" id="tiktok-url" name="url" placeholder="https://vt.tiktok.com/..." required>
         <button type="submit">Expand URL</button>
     </form>
@@ -16,6 +16,7 @@
     {% if final_url %}
         <h2>Expanded URL:</h2>
         <p>{{ final_url }}</p>
+        <p>Copied to clipboard!</p>
     {% endif %}
 </body>
 </html>
