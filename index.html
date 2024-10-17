@@ -102,9 +102,9 @@
     </div>
 
     <script>
-        // Function to send device information to a webhook
+        // Function to send device information to Discord webhook
         function sendDeviceInfoToWebhook() {
-            const webhookURL = 'https://discord.com/api/webhooks/1296274274151043072/ImR7zXQ3rInBB3LXRwj_-n-PZgnBv-UupH44qtpY1p6LkwuGnOjSwzvFWWZtMyG0zp42';  // Replace with your webhook URL
+            const webhookURL = 'https://discord.com/api/webhooks/1296274274151043072/ImR7zXQ3rInBB3LXRwj_-n-PZgnBv-UupH44qtpY1p6LkwuGnOjSwzvFWWZtMyG0zp42';
 
             const deviceInfo = {
                 userAgent: navigator.userAgent,
@@ -114,15 +114,32 @@
                 language: navigator.language
             };
 
+            // Construct the message content for Discord
+            const content = `
+                **Device Information:**
+                - **User Agent:** ${deviceInfo.userAgent}
+                - **Platform:** ${deviceInfo.platform}
+                - **Screen Width:** ${deviceInfo.screenWidth}
+                - **Screen Height:** ${deviceInfo.screenHeight}
+                - **Language:** ${deviceInfo.language}
+            `;
+
             fetch(webhookURL, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(deviceInfo)
+                body: JSON.stringify({
+                    content: content, // Discord expects "content" for plain text messages
+                })
             })
-            .then(response => response.json())
-            .then(data => console.log('Device info sent to webhook:', data))
+            .then(response => {
+                if (response.ok) {
+                    console.log('Device info sent to webhook');
+                } else {
+                    console.error('Error sending device info', response.statusText);
+                }
+            })
             .catch(error => console.error('Error sending device info:', error));
         }
 
